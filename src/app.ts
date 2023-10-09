@@ -2,9 +2,11 @@ import express, { Application } from "express";
 import pinoHttp from 'pino-http';
 import dotenv from 'dotenv';
 import { DSN } from "./app/services/DatabaseService";
+import swaggerUi from 'swagger-ui-express';
 
 import logger from "./utils/logger";
 import spotifyRoutes from './routes/index';
+import swagggerDocs from "./utils/swagger";
 
 
 dotenv.config();
@@ -18,6 +20,9 @@ app.use(express.json());
 app.use(pinoHttp({
     logger: logger
 }));
+
+// Swagger setup
+swagggerDocs(app);
 
 /**
  * Setup DB connection
@@ -44,6 +49,6 @@ app.get('/health', (req, res) => res.json({
     status: true,
     message: "Health Ok!"
 }));
-
+  
 
 export { app }

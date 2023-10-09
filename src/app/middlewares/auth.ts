@@ -17,7 +17,7 @@ export const auth = async (req: Request, res: Response, next: NextFunction) => {
         'Authorization': `Bearer ${accessToken}`
       }
     });
-
+    logger.info("[middleware] :: Point a");
     next();
 
   } catch (err) {
@@ -25,6 +25,4 @@ export const auth = async (req: Request, res: Response, next: NextFunction) => {
     return res.status(401).json({ message: 'AuthError: Access token is expired' });
   }
   
-  next();
-
 };

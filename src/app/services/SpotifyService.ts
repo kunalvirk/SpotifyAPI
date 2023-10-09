@@ -5,7 +5,8 @@ import { Track as ITrack, Tracks as ITracks, SearchResults } from '@spotify/web-
 import { DSN } from "./DatabaseService";
 import { Track } from "../models/entities/Track.entity";
 import { Artist } from "../models/entities/Artist.entity";
-import { QueryFailedError } from "typeorm";
+import { Like, QueryFailedError } from "typeorm";
+import logger from "../../utils/logger";
 
 /**
  * Spotify auth setup
@@ -20,6 +21,19 @@ const spotifyAxios = axios.create({
     baseURL: SPOTIFY_API_URI
 });
 
+interface IAccessToken {
+    credentials: {
+        access_token: string;
+        token_type: string;
+        expires_in: string;
+    }
+}
+
+interface IRequestSuccess {
+    message: string;
+}
+
+
 /**
  * Get an accessToken for Spotify API
  */
@@ -30,11 +44,12 @@ const authOptions = {
         'Content-Type': 'application/x-www-form-urlencoded'
     }
 }  
-export const getAccessToken = async () => {
+export const getAccessToken = async (): Promise<IAccessToken> => {
 
     // Request an accessToken
     try {
 
+        
         const token = await axios.post('https://accounts.spotify.com/api/token', {
             grant_type: 'client_credentials'
         }, authOptions);
@@ -42,6 +57,7 @@ export const getAccessToken = async () => {
     return token.data;
 
     } catch(e) {
+        
         throw "Something unexpected occurred.";
     }
 
@@ -50,9 +66,10 @@ export const getAccessToken = async () => {
 /**
  * Fetch the track metadata from an ISRC string
  */
-export const getTrackMetaData = async (req: Request) => {
+export const getTrackMetaData = async (req: Request): Promise<IRequestSuccess> => {
 
     try {
+        logger.info("[service] :: Point A");
         const isrc = req.body.isrc;
         spotifyAxios.defaults.headers.common['Authorization'] = req.headers['authorization'];
 
@@ -104,7 +121,7 @@ export const getTrackMetaData = async (req: Request) => {
         }
 
     } catch (error: any) {
-
+        logger.info("[service] :: Point B");
         if (error instanceof QueryFailedError) {
             throw "Either the ISRC is invalid or it already exist in the DB."
         } else if (error instanceof AxiosError) {
@@ -119,7 +136,7 @@ export const getTrackMetaData = async (req: Request) => {
 /**
  * Read local DB with `isrc`
  */
-export const getISRCData = async (req: Request) => {
+export const getISRCData = async (req: Request): Promise<Track[]> => {
     try {
     
         const getISRC = await DSN.getRepository(Track).find({
@@ -129,6 +146,23 @@ export const getISRCData = async (req: Request) => {
         });
 
         return getISRC;
+
+    } catch (error) {
+        throw "Not found!";
+    }
+}
+
+/**
+ * Find `artist` in local DB with `name`
+ */
+export const searchArtists = async (req: Request): Promise<Artist[]> => {
+    try {
+        const searchString = req.body.artist;
+        const searchArtists = await DSN.getRepository(Artist).findBy({
+            name: Like(`%${searchString}%`)
+        });
+
+        return searchArtists;
 
     } catch (error) {
         throw "Not found!";

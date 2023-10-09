@@ -13,6 +13,6 @@ export const DSN = new DataSource({
         Track,
         Artist
     ],
-    logging: true,
+    logging: false,
     synchronize: true
 });
