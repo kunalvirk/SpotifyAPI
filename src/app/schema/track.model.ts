@@ -1,10 +1,18 @@
 import { object, string, infer } from 'zod';
 
 /**
- * @openapi
+ * @swagger
  * components:
  *  schemas:
  *    FetchISRC:
+ *      type: object
+ *      required:
+ *        - isrc
+ *      properties:
+ *        isrc:
+ *          type: string
+ *          default: TCAGU2326239
+ *    FetchISRCResponse:
  *      type: object
  *      required:
  *        - isrc
