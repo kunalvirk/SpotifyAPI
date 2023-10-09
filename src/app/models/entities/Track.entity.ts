@@ -28,4 +28,8 @@ export class Track {
     @Column()
     trackCount: number
 
+    @ManyToMany(() => Artist, artist => artist.tracks)
+    @JoinTable()
+    artists: Artist[];
+
 }

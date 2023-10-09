@@ -20,9 +20,6 @@ const options: swaggerJSDoc.Options = {
                     bearerFormat: 'token'
                 },
             },
-        },
-        security: {
-            bearerAuth: []
         }
 	},
 	apis: ['./src/routes/*.ts', './src/app/schema/*.ts'],

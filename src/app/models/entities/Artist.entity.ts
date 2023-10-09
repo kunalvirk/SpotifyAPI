@@ -14,7 +14,6 @@ export class Artist {
     @Column()
     name: string;
 
-    @ManyToMany(() => Track)
-    @JoinTable()
+    @ManyToMany(() => Track, track => track.artists)
     tracks: Track[];
 }

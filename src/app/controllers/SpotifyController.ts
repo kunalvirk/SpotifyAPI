@@ -15,7 +15,7 @@ export const fetchAccessTokenHandler = async (req: Request, res: Response) => {
         
         res.status(401).json({
             success: false,
-            message: "Bad luck"
+            message: error
         })
     }
 };
@@ -23,15 +23,13 @@ export const fetchAccessTokenHandler = async (req: Request, res: Response) => {
 export const fetchTrackMetadataHandler = async (req: Request, res: Response) => {
     
     try {
-        logger.info("[controller] :: Getting track A");
         const tracks = await getTrackMetaData(req);
 
         res.status(200).json({
             success: true,
-            message: tracks.message
+            track: tracks
         });
     } catch (error) {
-        logger.info("[controller] :: Getting track B");
         res.status(500).json({
             success: false,
             message: error
